@@ -1,12 +1,10 @@
 package com.company.app;
 
 import com.company.app.services.ServiceProcessFiles;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Program {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Program.class);
 
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -16,12 +14,10 @@ public class Program {
             System.exit(-1);
             return;
         }
-        LOG.info("Iniciando aplicação...");
+        log.info("Iniciando aplicação...");
         Program program = new Program();
         program.iniciar(args[0]);
     }
-
-
 
     public void iniciar(String caminhoDirEntrada) {
         ServiceProcessFiles service = new ServiceProcessFiles(caminhoDirEntrada);
