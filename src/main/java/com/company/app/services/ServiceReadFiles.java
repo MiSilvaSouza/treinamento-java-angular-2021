@@ -1,6 +1,7 @@
 package com.company.app.services;
 
 import com.company.app.model.OrderModel;
+import com.company.app.utils.OrderUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class ServiceReadFiles {
@@ -44,17 +46,17 @@ public class ServiceReadFiles {
            }
 
            if (field[0].equals("C")) {
-               currentOrder = createOrder(field);
+               Optional<OrderModel> orderOpt = OrderUtils.createOrder(field);
+               if (orderOpt.isEmpty()) {
+                   continue;
+               }
+               currentOrder = orderOpt.get();
                orders.add(currentOrder);
                continue;
            }
+
+           // TODO - criar itens do pedido
        }
         return orders;
-    }
-
-    private OrderModel createOrder(String...field) {
-        int index = 1;
-        OrderModel order = OrderModel.builder().code(Integer.valueOf(field[index++])).build();
-        return order;
     }
 }

@@ -14,6 +14,7 @@ public class OrderModel {
     private Integer code;
     private ClientModel client;
     private BigDecimal amount;
+    private String cpf;
     private Date date;
     private List<ItemModel> items;
 
