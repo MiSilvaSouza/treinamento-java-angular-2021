@@ -54,15 +54,21 @@ public class ServiceProcessFiles {
 
             log.info("Encontrados [{}] pedidos no arquivo {}", orders.size(), caminhoArquivo);
 
-            //TODO - gravar no banco de dados
+            orders.forEach(order -> {
+                try {
+                    orderDao.insert(order);
+                    // TODO Inserir itens, criar o DAO dos itens e fazer o insert
+
+                    Optional<OrderModel> newOrder = orderDao.searchByCode(order.getCode());
+                    if (newOrder.isEmpty()) {
+                        throw new SQLException("O pedido não foi incluído, verifique se os dados estão corretos.");
+                    }
+
+                } catch (SQLException e) {
+                    log.error("Falha ao inserir pedido no banco de dados [{}]", order, e);
+                    // TODO Gerar lista de erro e criar um arquivo
+                }
+            });
         });
-
-        try {
-            Optional<OrderModel> printOrder = orderDao.searchByCode(7126);
-            System.out.println(printOrder);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

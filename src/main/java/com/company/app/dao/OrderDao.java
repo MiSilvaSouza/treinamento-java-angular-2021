@@ -29,18 +29,57 @@ public class OrderDao {
         return DriverManager.getConnection(url, props);
     }
 
-    public OrderModel insert(OrderModel order) {
+    public Optional<OrderModel> insert(OrderModel order) throws SQLException {
 
-        return order;
+        // TODO Se o pedido existir chamar método update(OrderModel order)
+
+//        int newOrder = order.getCode();
+//        int searchCode = this.searchByCode(newOrder).get().getCode();
+//
+//        if (newOrder == searchCode) {
+//            this.update(order);
+//        }
+
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("insert into orders ");
+        sb.append("     ( code ");
+        sb.append("     , client_code ");
+        sb.append("     , amount ");
+        sb.append("     , cpf ");
+        sb.append("     , date )");
+        sb.append("values ");
+        sb.append("     ( ? ");
+        sb.append("     , ? ");
+        sb.append("     , ? ");
+        sb.append("     , ? ");
+        sb.append("     , ? )");
+
+        int i = 1;
+        PreparedStatement pst = connection.prepareStatement(sb.toString());
+        pst.setInt(i++, order.getCode());
+        pst.setInt(i++, order.getClient().getCode());
+        pst.setBigDecimal(i++, order.getAmount());
+        pst.setString(i++, order.getCpf());
+        pst.setDate(i, (java.sql.Date)order.getDate());
+
+        int qtdRows = pst.executeUpdate();
+        if (qtdRows == 0) {
+            throw new SQLException("Nenhum registro inserido para o pedido []" + order);
+        }
+
+        return Optional.of(order);
+
     }
 
-    public OrderModel update(OrderModel order) {
+    public Optional <OrderModel> update(OrderModel order) throws SQLException {
 
-        return order;
+        return Optional.of(order);
     }
 
     public Optional <OrderModel> searchByCode(Integer idQuery) throws SQLException {
 
+        // TODO Criar tabela cliente e relacionar com pedido
         StringBuilder sb = new StringBuilder();
         sb.append("select code ");
         sb.append("     , client_code ");
@@ -48,16 +87,17 @@ public class OrderDao {
         sb.append("     , cpf ");
         sb.append("     , date ");
         sb.append(" from orders ");
-        sb.append(" where code = " + idQuery);
+        sb.append(" where code = ?");
 
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery(sb.toString());
+        int i = 1;
+        PreparedStatement pst = connection.prepareStatement(sb.toString());
+        pst.setInt(i, idQuery);
+        ResultSet rs = pst.executeQuery();
 
         if (!rs.next()) {
             return Optional.empty();
         }
 
-        int i = 1;
         Integer code = rs.getInt(i++);
         Integer client_code = rs.getInt(i++);
         BigDecimal amount = rs.getBigDecimal(i++);
